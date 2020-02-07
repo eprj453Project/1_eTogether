@@ -23,7 +23,6 @@ import VueSession from 'vue-session'
 import VuetifyNumberInput from '@jzolago/vuetify-number-input'
 
 
-
 Vue.config.productionTip = false
 
 Vue.use(VueSimplemde)
@@ -37,6 +36,15 @@ Vue.use(VueCsrf);
 Vue.use(VueAxios, axios)
 Vue.use(VuetifyNumberInput);
 Vue.use(VueSession)
+
+
+// Require dependencies
+
+var VueCookie = require('vue-cookie');
+// Tell Vue to use the plugin
+Vue.use(VueCookie);
+
+
 
 export const eventBus = new Vue()
 

@@ -2,8 +2,9 @@ package com.ssafy.edu.model;
 
 import java.util.Date;
 
+//예산한 간략하게 보기 위한 정보들
 public class BudgetInfo {
-	private int budget_num;
+
 	private String user_email;
 	private String budget_title;
 	private String personnel;
@@ -11,16 +12,15 @@ public class BudgetInfo {
 	private String fitness;
 	private Date date;
 	private int like_count;
-	
+
 	public BudgetInfo() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public BudgetInfo(int budget_num, String user_email, String budget_title, String personnel, String budget,
-			String fitness, Date date, int like_count) {
+	public BudgetInfo(String user_email, String budget_title, String personnel, String budget, String fitness,
+			Date date, int like_count) {
 		super();
-		this.budget_num = budget_num;
 		this.user_email = user_email;
 		this.budget_title = budget_title;
 		this.personnel = personnel;
@@ -28,14 +28,6 @@ public class BudgetInfo {
 		this.fitness = fitness;
 		this.date = date;
 		this.like_count = like_count;
-	}
-
-	public int getBudget_num() {
-		return budget_num;
-	}
-
-	public void setBudget_num(int budget_num) {
-		this.budget_num = budget_num;
 	}
 
 	public String getUser_email() {
@@ -92,6 +84,12 @@ public class BudgetInfo {
 
 	public void setLike_count(int like_count) {
 		this.like_count = like_count;
+	}
+
+	@Override
+	public String toString() {
+		return "BudgetInfo [user_email=" + user_email + ", budget_title=" + budget_title + ", personnel=" + personnel
+				+ ", budget=" + budget + ", fitness=" + fitness + ", date=" + date + ", like_count=" + like_count + "]";
 	}
 
 }

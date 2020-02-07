@@ -40,6 +40,5 @@ public class RandomPassword {
 	            break;
 	    }
 	    return randomChar.toString();
-
 	}
 }

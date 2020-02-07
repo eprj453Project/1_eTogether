@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.edu.dao.UserDaoImpl;
 import com.ssafy.edu.model.BoolResult;
+import com.ssafy.edu.model.MailUtil;
 import com.ssafy.edu.model.NumberResult;
 import com.ssafy.edu.model.RandomPassword;
 import com.ssafy.edu.model.User;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin(origins = { "*" }, maxAge = 6000)
 @RestController
 @RequestMapping("/api")
-@Api(value = "SSAFY", description = "SSAFY Resouces Management 2019")
+@Api(value = "SSAFY", description = "SSAFY 2020")
 public class UserController {
 	public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -44,11 +46,16 @@ public class UserController {
 
 	@Autowired
 	private IUserService userService;
+	
+	@Autowired
+	PasswordEncoder encoder;
+
 
 	@ApiOperation(value = "회원가입을 한다. ", response = UserseqResult.class)
 	@RequestMapping(value = "/regi", method = RequestMethod.POST)
 	public ResponseEntity<NumberResult> regi(@RequestBody User dto) throws Exception {
 		logger.info("3-------------regi-----------------------------" + dto);
+
 		int total = userService.regi(dto);
 		NumberResult nr = new NumberResult();
 		nr.setCount(total);
@@ -128,6 +135,11 @@ public class UserController {
 	@ApiOperation(value = "내 정보 확인할 때 비밀번호를 체크한다.", response = UserseqResult.class)
 	@RequestMapping(value = "/pwdCheck", method = RequestMethod.POST)
 	public ResponseEntity<NumberResult> pwdCheck(@RequestBody User dto) throws Exception {
+
+		logger.info("3-------------pwdCheck-----------------------------" + dto);
+		System.out.println("----------------------------------------" + dto);
+		int total = userService.pwdCheck(dto);
+
 		logger.info("Start pwdCheck ");
 
 		NumberResult nr = new NumberResult();
@@ -136,7 +148,6 @@ public class UserController {
 			// db에 있는지 확인
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPwd()));
-			SecurityContextHolder.getContext().setAuthentication(authentication);
 
 			nr.setCount(userService.pwdCheck(dto));
 			nr.setName("pwdCheck");
@@ -166,7 +177,7 @@ public class UserController {
 		System.out.println("memdetail : " + userdetail);
 		return new ResponseEntity<User>(userdetail, HttpStatus.OK);
 	}
-
+	
 	@ApiOperation(value = "이메일을 잊었을 때 이메일을 찾을 수 있다.", response = User.class)
 	@RequestMapping(value = "/findEmail", method = RequestMethod.POST)
 	public ResponseEntity<User> findEmail(@RequestBody User dto) throws Exception {
@@ -178,25 +189,39 @@ public class UserController {
 		return new ResponseEntity<User>(finduser, HttpStatus.OK);
 	}
 
+	
 	@ApiOperation(value = "비밀번호를 잊었을 때 비밀번호를 찾기 위한 임시 비밀번호를 발급한다.", response = User.class)
 	@RequestMapping(value = "/findPwd", method = RequestMethod.POST)
 	public ResponseEntity<User> findPwd(@RequestBody User dto) throws Exception {
 		logger.info("2-------------findPwd dto-----------------------------" + dto);
 		User finduserinfo = userService.findUserInfo(dto);
 		if (finduserinfo.getEmail() != null && finduserinfo.getName() != null) {
+			
 			String temp_pwd = RandomPassword.getRandomPassword();
 			System.out.println("temp_pwd : " + temp_pwd);
-			finduserinfo.setPwd(temp_pwd);
-			finduserinfo.setTemp_pwd(temp_pwd);
-			System.out.println("임시 비밀번호 " + finduserinfo.getTemp_pwd());
+			String encode_temp_pwd=encoder.encode(temp_pwd);
+			finduserinfo.setPwd(encode_temp_pwd);
+			finduserinfo.setTemp_pwd(encode_temp_pwd);
+//			System.out.println("임시 비밀번호 " + temp_pwd);
+			
 			userService.findPwd(finduserinfo); // 임시 비밀번호 로 변경
+//			System.out.println("db에 임시비밀번호로 바뀜");
+			
+			String subject = "[E-Together] 임시 비밀번호 발급 안내";
+			String msg = "";
+			msg += "<div align='center' style='border:1px solid black; font-family:verdana>";
+			msg += "<h3 style='color:blue;'><strong>"+dto.getName();
+			msg += "님</strong>의 임시 비밀번호 입니다. 로그인 후 비밀번호를 변경하세요.</h3>";
+			msg += "<p>임시 비밀번호 : <strong>" + temp_pwd + "</strong></p></div>";
+			MailUtil.sendMail(dto.getEmail(), subject, msg);
+			
 			logger.info("2-------------finduserinfo-----------------------------" + finduserinfo);
 			return new ResponseEntity<User>(finduserinfo, HttpStatus.OK);
 		} else {
 			return new ResponseEntity(HttpStatus.NO_CONTENT);
 		}
 	}
-
+   
 	@ApiOperation(value = "현재 로그인되어있는 이메일의 정보를 수정한다.", response = BoolResult.class)
 	@RequestMapping(value = "/updateMyself", method = RequestMethod.POST)
 	public ResponseEntity<UserseqResult> updateMyself(@RequestBody User dto) throws Exception {
@@ -220,6 +245,9 @@ public class UserController {
 	@RequestMapping(value = "/updatePwd", method = RequestMethod.POST)
 	public ResponseEntity<UserseqResult> updatePwd(@RequestBody User dto) throws Exception {
 		logger.info("5-------------updatePwd-----------------------------" + dto);
+		
+		String newpwd=encoder.encode(dto.getPwd());
+		dto.setPwd(newpwd);
 		userService.updatePwd(dto);
 		User ans = userService.findUserByEmail(dto.getEmail());
 		UserseqResult nr = new UserseqResult();
@@ -260,19 +288,7 @@ public class UserController {
 	public ResponseEntity<List<User>> findAllUsers(@RequestParam(required = false, defaultValue = "0") String nowPage)
 			throws Exception {
 		logger.info("1-------------findAllUsers-----------------------------" + new Date());
-//		int totPage = (int) Math.ceil(userService.cntTotMember() / 5.0);
-//		System.out.println("totPage : " + totPage);
-//		if (nowPage == "" || nowPage == null) {
-//			recentPage = 1;
-//		} else {
-//			recentPage = Integer.parseInt(nowPage);
-//		}
-//		System.out.println("recentPage :" + recentPage);
-//		int startContent = (recentPage - 1) * 5;
-//		System.out.println("startContent : " + startContent);
-//
-//		List<Member> memlist = memService.findAllMembers(startContent);	
-//		memlist.get(0).setTotPage(totPage);
+
 		List<User> userList = userService.findAllUsers();
 		System.out.println(userList);
 		if (userList.isEmpty()) {

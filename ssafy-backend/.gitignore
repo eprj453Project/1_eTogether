@@ -15,10 +15,6 @@ local.properties
 .loadpath
 .recommenders
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 1bf918eb4a3a39011f15e2ff8667051a9374064e
 # External tool builders
 .externalToolBuilders/
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ssafy.review">
+
+	<select id="getAllReview"
+		resultType="com.ssafy.edu.model.ReviewResult">
+		SELECT USER_EMAIL, BUDGET_TITLE, NAME,PERSONNEL,BUDGET,
+		FITNESS,LIKE_COUNT, IMG
+		FROM (SELECT USER_EMAIL, BUDGET_TITLE ,NAME
+		,PERSONNEL,BUDGET, FITNESS, LIKE_COUNT,IMG
+		FROM USER, BUDGET_INFO
+		WHERE
+		USER.EMAIL=#{user_email} AND USER.EMAIL=BUDGET_INFO.USER_EMAIL AND
+		BUDGET_INFO.BUDGET_TITLE=#{budget_title});
+	</select>
+
+	<insert id="insertReview"
+		parameterType="com.ssafy.edu.model.ReviewResult">
+		INSERT INTO REVIEW(USER_EMAIL,BUDGET_TITLE, IMG,CONTENT)
+		VALUES(USER_EMAIL=#{user_email},BUDGET_TITLE=#{budget_title},IMG=#{img},CONTENT=#{content});
+	</insert>
+
+	<update id="updateReview"
+		parameterType="com.ssafy.edu.model.ReviewResult">
+		 UPDATE REVIEW
+     SET USER_EMAIL=#{user_email},BUDGET_TITLE=#{budget_title}, IMG=#{img},CONTENT=#{content}
+     WHERE USER_EMAIL=#{user_email} AND BUDGET_TITLE=#{budget_title}
+	</update>
+	
+	<delete id="deleteReview"
+		parameterType="com.ssafy.edu.model.ReviewResult">
+		DELETE FROM REVIEW WHERE USER_EMAIL=#{user_email} aND BUDGET_TITLE=#{budget_title}
+	</delete>
+</mapper>
+

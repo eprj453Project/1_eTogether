@@ -8,29 +8,37 @@
         v-resize-text
       >Pwd Check</div>
     </ImgBanner>
-
-    <v-form ref="form" v-model="valid" lazy-validation>
-      <v-container>
+    
+    <v-form ref="form" v-if="pwdCheck" v-model="valid" lazy-validation>
+      <v-container  fluid style="width:700px; padding-top:80px; padding-bottom:120px">
+        <h6 style="color:darkred">회원 정보를 확인하려면 비밀번호 확인이 필요합니다!</h6>
       <v-text-field
           v-model="user.pwd"
           :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
           type="password"
         ></v-text-field>
-      <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">비밀번호 체크</v-btn>
+      <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate" style="float:right">비밀번호 확인</v-btn>
       </v-container>
-    </v-form> 
+    </v-form>
+
+    <!-- <UserInfo v-if="isPwdRight" :isPwdRight="isPwdRight" :userDetail="userDetail"></UserInfo> -->
   </div>
 </template>
 
 <script>
 import ImgBanner from "../components/ImgBanner";
 import http from "../http-common";
+import ResizeText from "vue-resize-text";
+import UserInfo from "../components/UserInfo";
 export default {
   name: "PwdCheckPage",
   components: {
-    ImgBanner
+    ImgBanner,
+    UserInfo
   },
-
+directives: {
+    ResizeText
+  },
   computed: {
     requestHeader: function() {
       return this.$store.getters.requestHeader
@@ -39,12 +47,14 @@ export default {
 
   data() {
     return {
+      pwdCheck : true,
+      isPwdRight: false,
       user: {
-        email: this.$store.state.user,
+        email: localStorage.getItem('email'),
         pwd: "",
         //Authorization : 'Bearer '+this.$store.state.accessToken
-
       },
+
       show1: false,
       valid: true,
       rules: {
@@ -57,26 +67,32 @@ export default {
     }
   },
   methods: {
+    
     validate() {
       if (this.$refs.form.validate()) {
-        // console.log(this.requestHeader)
-        // console.log(this.credentials.email)
-        // console.log(this.credentials.pwd)
-        let form = new FormData()
-        form.append('email', this.email)
-        form.append('pwd', this.pwd)
+      
         http
           .post('/pwdCheck',{
             email: this.user.email,
             pwd : this.user.pwd,
-            // Authorization: 'bearer ' + this.$store.state.accessToken
+            
           }, this.$store.getters.requestHeader)
           .then(res => {
             console.log(res)
+            console.log(this.$store.getters.isLoggedIn)
+            if (res.data.state == 'succ') {
+              this.$router.push('/userinfo')
+            } else {
+              alert('비밀번호 오류입니다.')
+              this.$router.push('/pwdcheck')
+            }
           })
           .catch(err => {
+            alert('비밀번호 에러입니다.')
             console.log(err)
+            this.$router.push('/pwdcheck')
           })
+          this.pwdCheck = false
       }
     }
   },

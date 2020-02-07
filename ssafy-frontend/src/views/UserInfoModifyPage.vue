@@ -1,20 +1,20 @@
 <template>
   <div>
     <ImgBanner>
-      <div
+      <!-- <div
         class="text-center text-white"
         style="line-height:1.2em;font-size:2.5em;"
         slot="text"
         v-resize-text
-      >Sign Up</div>
+      ></div>-->
     </ImgBanner>
 
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-container fluid style="width:700px; padding-bottom:80px">
-        <h2 class="text-center mt-5">회원가입</h2>
+        <h2 class="text-center mt-5">내 정보 수정</h2>
         <br />
         <v-text-field
-          v-model="credentials.name"
+          v-model="computedUser.name"
           :rules="nameRules"
           label="Name"
           counter="20,"
@@ -22,26 +22,13 @@
           autocomplete="name"
         ></v-text-field>
 
-        <div>
-          <v-text-field v-model="credentials.email" :rules="emailRules" label="E-mail" required></v-text-field>
+        <!-- <div style="padding-bottom:30px">
+          <v-text-field v-model="computedUser.email" :rules="emailRules" label="E-mail" required></v-text-field>
           <v-btn @click="emailcheck" small color="blue" style="float:right; color:white">중복 확인</v-btn>
-        </div>
-
-        <br />
-        <v-text-field
-          v-model="credentials.pwd"
-          :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-          :rules="[rules.required, rules.min_8]"
-          :type="show1 ? 'text' : 'password'"
-          name="input-10-1"
-          label="Password"
-          hint="At least 8 characters"
-          counter="16"
-          @click:append="show1 = !show1"
-        ></v-text-field>
+        </div> -->
 
         <v-text-field
-          v-model="credentials.phone"
+          v-model="computedUser.phone"
           label="Phone number"
           :rules="[rules.required, rules.is_num, rules.min_11]"
           required
@@ -49,13 +36,16 @@
         ></v-text-field>
 
         <div class="btn" style="float:right">
+          <!-- <v-btn color="primary" class="mr-4"  @click="pwdmodi">비밀번호 수정</v-btn> -->
           <v-btn color="error" class="mr-4" @click="reset">Reset</v-btn>
-          <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">가입!</v-btn>
+          <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">수정!</v-btn>
         </div>
       </v-container>
     </v-form>
   </div>
 </template>
+
+
 
 <script>
 import ImgBanner from "../components/ImgBanner";
@@ -70,17 +60,16 @@ export default {
     ResizeText
   },
   data: () => ({
-    credentials: {
+    user: {
       name: "",
       email: "",
-      phone: "",
-      pwd: ""
+      phone: ""
     },
-    duplicate: false,
-    // nickname: "",
+    dialog: false,
+
     show1: false,
     valid: true,
-    pwd: "",
+
     rules: {
       required: value => !!value || "Required.",
       min_8: v => v.length >= 8 || "Min 8 characters",
@@ -98,56 +87,49 @@ export default {
       v => /.+@.+\..+/.test(v) || "E-mail must be valid"
     ]
   }),
-  watch: {
-    credentials:{      
-      email(newVal) {
-      fetch(`/${newVal}`).then((data) => {
-      this.email = data;
-      this.duplicate=false;      
-    });
-    },
-
-  //   movie(movie) {
-  //   // Fetch data about the movie
-  //   fetch(`/${movie}`).then((data) => {
-  //     this.movieData = data;
-  //   });
-  // }
-    deep : true,
-    immediate : true
-    }
-  },
   methods: {
+    getUserDetail() {
+      console.log("getUserDetail active");
+      let myEmail = localStorage.getItem("email");
+      http
+        .post(`/myselfDetail/${myEmail}`)
+        .then(res => {
+          // console.log(res)
+          this.user.email = res.data.email;
+          this.user.name = res.data.name;
+          this.user.phone = res.data.phone;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
     validate() {
-      if(this.duplicate==false){
-        alert("E-mail 중복 확인을 해주세요!");
-      }
-     else if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate()) {
         // let formData = new formData()
         // formData.append('email', this.email)
         // formData.append('pwd', this.pwd)
         // formData.append('phone', this.phone)
         http
-          .post("auth/signup", this.credentials)
+          .post("/updateMyself", this.user, this.$store.getters.requestHeader)
           .then(res => {
             console.log(res);
-            this.$router.push("/");
+            if (
+              res.data.state == "succ" &&
+              this.$store.getters.isLoggedIn == true
+            ) {
+              alert("수정 성공");
+            } else {
+              alert("수정 오류입니다.");
+            }
+            this.$router.push("/userinfo");
           })
-          .catch(err => {            
-              console.log(err);
-              alert("회원가입 오류!");            
+          .catch(err => {
+            console.log(err);
           });
         this.snackbar = true;
       }
     },
-    resetValidation() {
-      this.$refs.form.resetValidation();
-    },
-    reset() {
-      this.$refs.form.reset();
-    },
     emailcheck() {
-      this.duplicate=true;
       http
         .post("/emailCheck", {
           email: this.credentials.email
@@ -156,20 +138,32 @@ export default {
           console.log(respone);
           if (respone.data.state == "succ") {
             alert("중복된 E-mail입니다. 다른 E-mail을 입력해주세요.");
-            this.duplicate=false;
             this.credentials.email = "";
           } else {
             alert("사용 가능합니다.");
-            this.duplicate = true;
           }
         })
         .catch(error => {
           console.log(error);
         });
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+    reset() {
+      this.$refs.form.reset();
     }
   },
   mounted() {
-    this.$modal.hide("login-modal");
+    this.getUserDetail();
+  },
+
+  computed: {
+    computedUser: function() {
+      return this.user;
+    },
+
+    requestHeader: function() {}
   }
 };
 </script>

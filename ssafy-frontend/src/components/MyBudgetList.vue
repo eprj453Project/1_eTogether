@@ -22,11 +22,11 @@
       </tr>
     </template>
     <tr v-for="budget in computedPagingBudgets" :key="budget.created_at">
-      <td v-html="budget.title"
+      <td v-html="budget.budget_title"
       @click="show_detail(budget.num)"
       style="text-align:center"></td>
-      <td v-html="budget.people"></td>
-      <td v-html="budget.money"></td>
+      <td v-html="budget.personnel"></td>
+      <td v-html="budget.budget"></td>
       <td v-html="budget.date"></td>
       <td v-html="budget.fitness"></td>
       <td><v-btn >pdf로 저장</v-btn></td>
@@ -53,11 +53,15 @@ export default {
     pages: {
       type: Number
     },
-    pagingList: {
+    allBudgets: {
       type: Array,
       required: true
     },
     allLength: {
+      type: Number,
+      required: true
+    },
+    budgetPerPage: {
       type: Number,
       required: true
     }
@@ -76,24 +80,41 @@ export default {
   },
   computed: {
     computedPagingBudgets: function() {
-      this.pagingBudgets = [];
-      let tmp = 0;
-      for (let i = this.pages * 5 - 5; i < this.pages * 5; i++) {
-        console.log("i : " + i);
-        if (i === this.allLength) {
-          this.limits = tmp;
-          console.log(tmp);
-          break;
-        } else {
-          this.pagingBudgets.push(this.pagingList[i]);
-        }
-        tmp++;
+      this.pagingBudgets = []
+      let start = (this.pages - 1) * this.budgetPerPage
+      let end =  (this.pages - 1) * this.budgetPerPage + this.budgetPerPage;
+
+      if (end > allBudgets.length) {
+        end = allBudgets.length;
       }
-      console.log(this.pagingBudgets);
+
+      for (let i = start; i < end; i++) {
+        this.pagingBudgets.push(allBudgets[i]);
+      }
+
       return this.pagingBudgets;
+
+      // console.log('computedPagingBudget')
+      // this.pagingBudgets = [];
+      // let tmp = 0;
+      // for (let i = this.pages * 5 - 5; i < this.pages * 5; i++) {
+      //   console.log("i : " + i);
+      //   if (i === this.allLength) {
+      //     this.limits = tmp;
+      //     console.log(tmp);
+      //     break;
+      //   } else {
+      //     this.pagingBudgets.push(this.pagingList[i]);
+      //   }
+      //   tmp++;
+      // }
+      // console.log(this.pagingBudgets);
+      // return this.pagingBudgets;
     }
   },
-  mounted() {}
+  mounted() {
+    console.log(this.pagingList)
+  }
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <v-layout mt-5 wrap>
     <v-flex v-for="product in computedPagingProducts" xs6 sm4 lg3 :key="product.pro_name">
-      <Product class="ma-2" :pro_name="product.pro_name" :price="product.price" :img="product.img"></Product>
+      <Product class="ma-2" :pro_name="product.pro_name" :price="product.price" :img="product.img" :product="product"></Product>
     </v-flex>
   </v-layout>
 </template>
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     all() {
-      product = this.$attrs.product;
+      //product = this.$attrs.product;
     }
   },
   computed: {

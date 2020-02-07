@@ -9,49 +9,51 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<!-- 내 전체 예산안 보기 -->
 	<select id="getBudgetList" parameterType="java.lang.String"
-		resultType="com.ssafy.edu.model.BudgetList">
-		SELECT PRO_ID, PRO_NAME, PRICE, MAIN_CATEGORY, GRAM, IMG
-		FROM PRODUCT
+		resultType="com.ssafy.edu.model.BudgetInfo">
+		SELECT BUDGET_TITLE, PERSONNEL,BUDGET,FITNESS, DATE,LIKE_COUNT
+		FROM BUDGET_INFO
+		WHERE USER_EMAIL=#{user_email}
 	</select>
 
-	<!-- 내 예산안 자세히 보기 -->
+	<!-- 내 예산안 상세 보기 -->
 	<select id="getOneBudget"
 		parameterType="com.ssafy.edu.model.Budget"
-		resultType="com.ssafy.edu.model.BudgetInfo">
-		SELECT PRO_ID, PRO_NAME, PRICE, MAIN_CATEGORY, GRAM, IMG
-		FROM PRODUCT WHERE PRO_NAME LIKE CONCAT('%',#{keyword},'%')
+		resultType="com.ssafy.edu.model.Budget">
+		SELECT
+		I.USER_EMAIL,I.BUDGET_TITLE,I.PERSONNEL,I.BUDGET,I.FITNESS,I.DATE,I.LIKE_COUNT,L.PRO_ID,L.PRO_NAME,L.QUANTITY,L.PRICE
+		FROM BUDGET_INFO I, BUDGET_LIST L
+		WHERE I.USER_EMAIL=#{user_email} AND
+		I.BUDGET_TITLE=#{budget_title} AND L.USER_EMAIL=I.USER_EMAIL AND
+		L.USER_EMAIL=I.USER_EMAIL;
 	</select>
-
-	<!-- 내 예산안 저장하기 -->
-<!-- 	<insert id="insertOneBudget" -->
-<!-- 		parameterType="com.ssafy.edu.model.Budget"> -->
-<!-- 		INSERT INTO BUDGET_LIST(USER_EMAIL, -->
-<!-- 		PRO_ID,PRO_NAME, -->
-<!-- 		QUANTITY, PRICE) -->
-<!-- 		VALUES(#{budget_num}, -->
-<!-- 		#{user_email},#{pro_id}, -->
-<!-- 		#{pro_name},#{quantity},#{price}); -->
-
-<!-- 		INSERT INTO BUDGET_INFO(USER_EMAIL, -->
-<!-- 		BUDGET_TITLE,PERSONNEL, -->
-<!-- 		BUDGET, FITNESS,DATE,LIKE_COUNT) -->
-<!-- 		VALUES(#{budget_num}, -->
-<!-- 		#{user_email},#{budget_title}, -->
-<!-- 		#{personnel},#{budget},#{fitness},date(now()),#{like_count}); -->
-<!-- 	</insert> -->
-
-	<insert id="insertBudgetList"
-		parameterType="com.ssafy.edu.model.BudgetList">
-		INSERT INTO BUDGET_LIST(USER_EMAIL, PRO_ID,PRO_NAME, QUANTITY, PRICE)
-		VALUES(	#{user_email},#{pro_id},#{pro_name},#{quantity},#{price});
-	</insert>
 
 	<insert id="insertBudgetInfo"
 		parameterType="com.ssafy.edu.model.BudgetInfo">
-		INSERT INTO BUDGET_INFO(BUDGET_NUM,USER_EMAIL, BUDGET_TITLE,PERSONNEL,
-		BUDGET,	FITNESS,DATE,LIKE_COUNT)
-		VALUES(#{budget_num},#{user_email},#{budget_title},	#{personnel},#{budget},#{fitness},date(now()),#{like_count});
+		INSERT INTO BUDGET_INFO(USER_EMAIL,
+		BUDGET_TITLE,PERSONNEL,
+		BUDGET, FITNESS,DATE,LIKE_COUNT)
+		VALUES(#{user_email},#{budget_title},#{personnel},#{budget},#{fitness},date(now()),#{like_count});
 	</insert>
+
+	<insert id="insertBudgetList"
+		parameterType="com.ssafy.edu.model.BudgetList">
+		INSERT INTO BUDGET_LIST(USER_EMAIL,BUDGET_TITLE,
+		PRO_ID,PRO_NAME, QUANTITY, PRICE)
+		VALUES(#{user_email},#{budget_title},#{pro_id},#{pro_name},#{quantity},#{price});
+	</insert>
+
+	<!--DELETE FROM 테이블명 WHERE = 조건 -->
+	<delete id="deleteBudgetInfo"
+		parameterType="com.ssafy.edu.model.Budget">
+		DELETE FROM BUDGET_INFO WHERE USER_EMAIL=#{user_email} and
+		BUDGET_TITLE=#{budget_title};
+	</delete>
+	
+	<delete id="deleteBudgetList"
+		parameterType="com.ssafy.edu.model.Budget">
+		DELETE FROM BUDGET_LIST WHERE USER_EMAIL=#{user_email} and
+		BUDGET_TITLE=#{budget_title} and PRO_ID=#{pro_id};
+	</delete>
 
 </mapper>
 

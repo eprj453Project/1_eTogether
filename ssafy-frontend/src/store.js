@@ -7,19 +7,15 @@ export default new Vuex.Store({
   state: {
     accessToken: localStorage.getItem('accessToken'),
     user: localStorage.getItem('user'),
-    people: '', // 인원
-    money: '', // 예산
-    // productlist: [{ pro_name: '', price: '', quantity: '' }]
-    pro_name: '', // 상품명
-    price: '', // 가격
-    quantity: '', // 수량
-    tokenType: 'Bearer',
+    email: localStorage.getItem('email'),
+    personnel: '', // 인원
+    budget: '', // 예산 
+    tokenType: '',
+    budgetlist : [],
+    total: 0,
+
     
-    list:{
-      pro_name: '', // 상품명
-      price: '', // 가격
-      quantity: '' // 수량
-    }
+  
 
   },
   getters : {
@@ -34,31 +30,59 @@ export default new Vuex.Store({
       }
     },
     userId: function(state) {
-      return state.user ? user : ""
+      return state.user ? state.user : ""
     }
   },
   mutations : {
     setToken: function(state, token){
       state.accessToken = token
+    },
+    deleteProduct: function(state, idx) {
+      var i = state.budgetlist.indexOf(idx)
+      // state.total -= state.budgetlist[i].price;
+      state.budgetlist.splice(i,1);  
+      this.budgetalert();
+    },
+    addCart: function(state, product) {
+      const idx = state.budgetlist.findIndex(function (budget) {
+        return budget.pro_name === product.pro_name
+      })
+      console.log(idx)
+      if (idx === -1) {
+          state.budgetlist.push(product)
+
+      }
+      else {
+        state.budgetlist[idx].quantity += 1
+
+      }
+      state.total += (product.price*=product.quantity);
+      console.log(state.budgetlist)
+    },
+    cartClear: function(state) {
+      state.budgetlist = []
     }
+
   },
-
-
 
   actions : {
  
-    login: function(options, token, user) {
-      options.commit('setToken', token)
-    },
-
-    logout: function(options) {
-      options.commit('setToken')
-    },
-},
-
-  computed: {
-    
+  login: function(options, token) {
+    options.commit('setToken', token)
   },
 
+  logout: function(options) {
+    options.commit('setToken')
+  },
+  
+  addCartAsync: function(options, product) {
+    console.log('addCartAsync')
+    options.commit('addCart', product)
+  },
 
+  deleteProductAsync: function(options, idx) {
+    options.commit('deleteProduct', idx)
+  }
+
+}
 })

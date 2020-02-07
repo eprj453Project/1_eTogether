@@ -1,5 +1,6 @@
 <template>
-  <div style="width:100%">
+  <modal name="budget-modal" transition="pop-out" height="650">
+    <div style="width:100%">
     <b-list-group-item style="text-align:center; background-color:lightgrey">
       <strong>장보기 내역</strong>
     </b-list-group-item>
@@ -14,17 +15,17 @@
           <tr style="font-size:10pt; text-align:center">
             <th>항목</th>
             <th>수량</th>
-            <th>가격</th>
-            <th>삭제</th>
+            <th >가격</th>
+            <th >삭제</th>
           </tr>
         </thead>
         <tbody >          
            <tr v-for="i in computedBudgetList.length" :key="i"  style="font-size:10pt;">
-            <td v-html="list[i-1].pro_name" class="product"></td>
+            <td v-html="computedBudgetList[i-1].pro_name" class="product"></td>
             <!-- <td v-html="list[i-1].quantity" class="quantity" style="text-align:center"></td> -->
             <td class="quantity" style="text-align:center"><input
               type="number"   
-              v-model="list[i-1].quantity"
+              v-model="computedBudgetList[i-1].quantity"
               @input="newquantity(i-1)"
               style="text-align:right; width:50px"
               autofocus
@@ -33,16 +34,18 @@
             
             <td class="pro_price" style="text-align:center;">{{computedBudgetList[i-1].price}} 원</td>
             <td style="text-align:center;">
-              <v-btn text icon color="red" @click="del_pro(i-1)">
-                <v-icon>close</v-icon>
-              </v-btn>
+                <v-btn text icon color="red" @click="del_pro(i-1)">
+                  <v-icon>close</v-icon>
+                </v-btn>             
             </td>
           </tr>
+          
         </tbody>
       </table>
-
+     
       <br />
     </b-list-group-item>
+
 
     <b-list-group-item>
       <table style="width:100%; margin:auto">
@@ -87,16 +90,14 @@
       </table>
     </b-list-group-item>
 
+
     <b-list-group-item>
       <table style="width:100%; margin:auto">
         <tr>
           <td width="20%">
             <strong>합계</strong>
           </td>
-          <td
-            width="80%"
-            style="text-align:right; font-weight:bold; color:darkblue"
-          >{{this.total}} 원</td>
+          <td width="80%" style="text-align:right; font-weight:bold; color:darkblue">{{this.total}} 원</td>
         </tr>
       </table>
     </b-list-group-item>
@@ -106,10 +107,7 @@
           <td width="20%">
             <strong>잔액</strong>
           </td>
-          <td
-            width="80%"
-            style="text-align:right; font-weight:bold; color:darkred"
-          >{{this.budget-this.total}} 원</td>
+          <td width="80%" style="text-align:right; font-weight:bold; color:darkred">{{this.budget-this.total}} 원</td>
         </tr>
       </table>
     </b-list-group-item>
@@ -118,10 +116,10 @@
     <!-- 제목 지정 modal -->
     <v-dialog v-model="dialog" max-width="290">
       <v-card>
-        <v-card-title class="headline">My Budget 저장</v-card-title>
+        <v-card-title class="headline">리스트 저장</v-card-title>
 
         <v-col>
-          <v-text-field autocomplete="nope" label="제목을 입력해주세요" v-model="budgetTitle"></v-text-field>
+          <v-text-field autocomplete="nope" label="제목을 입력해주세요"></v-text-field>
         </v-col>
 
         <v-card-actions>
@@ -132,10 +130,11 @@
       </v-card>
     </v-dialog>
   </div>
+  </modal>
 </template>
+
 <script>
 import EventBus from "../event-bus.js";
-import http from "../http-common";
 export default {
   data(){    
     return{
@@ -145,43 +144,43 @@ export default {
     price: 0,
     dialog: false,
     total: 0,
-    budgetTitle: "",
+    
     list: []
     }
   },
-
-  created() {
-    EventBus.$on("addCart", product => {
+  
+ created() {
+    EventBus.$on("addCart", product=>{
       this.list.push(product);
       this.total_sum(product.price*=product.quantity);
     });
   },
-  watch: {
-    list: {
-      handler: function(newVal) {
+  watch:{
+    list:{
+      handler:function(newVal){
         console.log(newVal);
         console.log("dddddddddd");
         console.log(this.list);
-        let sum = 0;
-        for (let i = 0; i < this.list.length; i++) {
-          sum += newVal[i].quantity * newVal[i].pro_price;
+        let sum = 0 ;
+        for(let i = 0 ; i<this.list.length; i++){
+            sum += newVal[i].quantity*newVal[i].pro_price;
         }
         this.total = sum;
-        this.budgetalert();
-        // this.total+= this.list[i].price;
-      },
-      deep: true,
-      immediate: true,
-    }
+         this.budgetalert();
+      // this.total+= this.list[i].price;
+    },
+    deep :true,
+    immediate:true
+   }
   },
   methods: {
-    cookie() {
-      this.$cookie.set("test", this.personnel, 1);
+    cookie(){
+      this.$cookie.set('test',this.personnel, 1);
     },
     triggerEvent() {
       this.$store.state.personnel = this.personnel;
       this.$store.state.budget = this.budget;
-    },
+    },    
     stringNumberToInt(stringNumber) {
       //console.log(parseInt(stringNumber.replace(/,/g, "")));
       return parseInt(stringNumber.replace(/,/g, ""));
@@ -198,22 +197,20 @@ export default {
         if (this.budget == "") {
           alert("예산을 입력해주세요.");
         }
-        http
+        httpCommon
           .post("/budget", {
-            user_email: localStorage.getItem('email'),
-            budget_title: this.budgetTitle,
+            budget_title: this.budget_title,
             personnel: this.personnel,
             budget: this.budget,
-            budgetlist: this.list
-          }, this.$store.getters.requestHeader)
+            list: this.list
+          })
           .then(response => {
-            console.log(response)
-            // this.result = response.;
+            this.result = response.data;
           })
           .catch(ex => {
             console.warn("ERROR! :", ex);
           });
-        this.$router.push("/mylist");
+        router.push("/mylist");
       } else {        
         this.dialog=false;
       }
@@ -229,32 +226,30 @@ export default {
       return this.total;
     },
     del_pro(i){
-
-      // var index = this.list.indexOf(i)
-      // this.total -= this.computedBudgetList[i].price;
-      this.$store.dispatch('deleteProductAsync', i)
-      // this.list.splice(i,1);  
-      // this.budgetalert();  
+      var index = this.list.indexOf(i)
+      this.total -= this.list[i].price;
+      this.list.splice(i,1);  
+      this.budgetalert();  
     },
-    newquantity(i) {
-      if (isNaN(this.list[i].quantity)) {
-        this.list[i].quantity = 1;
+    newquantity(i){
+      if(isNaN(this.list[i].quantity)){
+        this.list[i].quantity =1;
       }
-      this.list[i].price = this.list[i].quantity * this.list[i].pro_price;
+      this.list[i].price=this.list[i].quantity*this.list[i].pro_price;
       // console.log(this.list[i].price);
-      this.budgetalert();
+       this.budgetalert();
     }
   },
   mounted() {
     this.personnel = this.$store.state.personnel;
     this.budget = this.$store.state.budget;
-    if (this.budget == "" || this.personnel == "") {
-      alert("인원과 예산을 입력해주세요!");
-    }
+    if(this.budget=="" || this.personnel==""){
+        alert("인원과 예산을 입력해주세요!");
+      };
+      
   },
   computed: {
     computedBudgetList() {
-      this.list = this.$store.state.budgetlist
       return this.$store.state.budgetlist
     }
   }
@@ -267,8 +262,8 @@ export default {
   width: 100%;
 }
 
-.product {
-  padding-top: 8px;
+.product {  
+  padding-top:8px;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;

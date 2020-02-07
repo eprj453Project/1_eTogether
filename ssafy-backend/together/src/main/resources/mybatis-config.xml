@@ -27,5 +27,6 @@
         <mapper resource="mapper/user.xml"/>
         <mapper resource="mapper/product.xml"/>
         <mapper resource="mapper/budget.xml"/>
+        <mapper resource="mapper/review.xml"/>
     </mappers>
 </configuration>

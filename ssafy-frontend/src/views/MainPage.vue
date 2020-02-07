@@ -4,8 +4,8 @@
   <v-container class="main">
    
     <v-form ref="form" v-model="valid" lazy-validation>
-      <v-text-field type="number" v-model="people" :step="10" label="인원" required :rules="[v => !!v || '인원을 입력해 주세요']"></v-text-field>
-      <v-text-field type="number" v-model="money" :step="10000" label="예산" required :rules="[v => !!v || '예산은 입력해 주세요']"></v-text-field>
+      <v-text-field type="number" v-model="personnel" :step="10" min="10" label="인원" required :rules="[v => !!v || '인원을 입력해 주세요']"></v-text-field>
+      <v-text-field type="number" v-model="budget" :step="10000" min="10000" label="예산" required :rules="[v => !!v || '예산을 입력해 주세요']"></v-text-field>
 
       <!-- <v-select
         v-model="select"
@@ -32,8 +32,8 @@ export default {
   },
   data: () => ({
     valid: true,
-    people: "",
-    money: "",
+    personnel: "",
+    budget: "",
     
     // items: ["Item 1", "Item 2", "Item 3", "Item 4"]    
   }),
@@ -43,8 +43,8 @@ export default {
       if (this.$refs.form.validate()) {         
         this.snackbar = true;
         this.$router.push("/product"); 
-        this.$store.state.people=this.people;
-        this.$store.state.money=this.money;
+        this.$store.state.personnel=this.personnel;
+        this.$store.state.budget=this.budget;
       }
     },
     reset() {

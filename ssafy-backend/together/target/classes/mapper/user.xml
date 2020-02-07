@@ -41,7 +41,7 @@
 
 	<!-- 회원 정보 삭제 -->
 	<update id="deleteMyself" parameterType="java.lang.String">
-		UPDATE USER SET EMAIL='XXXX', NAME='XXXX', PWD='XXXX', PHONE='XXXX', WITHDRAW = 1 WHERE EMAIL=#{email}
+		UPDATE USER SET EMAIL=#{email}, NAME='XXXX', PWD='XXXX', PHONE='XXXX', WITHDRAW = 1 WHERE EMAIL=#{email}
 	</update>
 
 	<!-- 모든 회원 검색 -->
@@ -75,7 +75,7 @@
 	<select id="findEmail" parameterType="com.ssafy.edu.model.User"
 		resultType="com.ssafy.edu.model.User">
 		SELECT EMAIL FROM USER
-		WHERE NAME=#{name} AND EMAIL=#{email}
+		WHERE NAME=#{name} AND PHONE=#{phone}
 	</select>
 	
 	<!-- 비밀번호 찾기 전 회원이 있는지 확인  -->

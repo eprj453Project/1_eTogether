@@ -66,7 +66,7 @@ public class UserDaoImpl {
 	}
 
 	public void findPwd(User finduserinfo) {
-		sqlSession.update(ns+"findPwd", finduserinfo);
+		sqlSession.update(ns+"updatePwd", finduserinfo);
 		
 	}
 }
