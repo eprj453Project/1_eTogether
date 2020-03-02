@@ -25,7 +25,7 @@
               @input="triggerEvent"
               style="text-align:right; width:90%;"
               autofocus
-            />명
+            /> 명
           </td>
         </tr>
       </table>
@@ -44,9 +44,9 @@
               id="budget"
               v-model="budget"
               @input="triggerEvent"
-              style="text-align:right;width:90%"
+              style="text-align:right; width:90%"
               autofocus
-            />원
+            /> 원
             <!-- <v-btn text>예산 추천</v-btn> -->
           </td>
         </tr>
@@ -163,9 +163,12 @@
       <v-card>
         <v-card-title class="headline">수량 변경</v-card-title>
           <v-text-field
+            type="number"
             width="50%"
+            min="1"
             label="수량을 입력해주세요"
             v-model="changeQuantityByNum"
+            style="padding:30px"
           ></v-text-field>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -477,7 +480,7 @@ input{
     border: 0;
     width: 2%;
 }
-nput::-webkit-outer-spin-button,
+input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
