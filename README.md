@@ -1,7 +1,3 @@
----
-typora-copy-images-to: typora-user-images
----
-
 ## [#1. Web/Mobile_웹기술 PJT : 웹 프론트엔드 / 백엔드 개발]
 
 ### [공통-Sub PJT II] 개발 시스템 API 활용 및 관리자 기능 구현

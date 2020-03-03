@@ -8,7 +8,7 @@
         v-resize-text
       >Mart</div>
     </ImgBanner>
-    <!-- <v-flex xs12 md9 lg9 class="main"> -->
+    <v-flex xs12 md9 lg9 class="main">
       <!-- 비율 추천 그래프 -->
       <div class="mt-8">
         <div>

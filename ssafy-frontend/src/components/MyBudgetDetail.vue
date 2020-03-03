@@ -232,37 +232,38 @@ export default {
       }
     }
     ,
-    makePDF() {     
+   makePDF() {     
      
-			window.html2canvas = html2canvas //Vue.js 특성상 window 객체에 직접 할당해야한다.
-			let pdf = new jsPDF('p', 'mm', 'a4')
-			let canvas = pdf.canvas
-			const pageWidth = 210//캔버스 너비 mm
-			const pageHeight = 297 //캔버스 높이 mm
+         window.html2canvas = html2canvas //Vue.js 특성상 window 객체에 직접 할당해야한다.
+         let pdf = new jsPDF('p', 'mm', 'a4')
+         let canvas = pdf.canvas
+         const pageWidth = 210//캔버스 너비 mm
+         const pageHeight = 297 //캔버스 높이 mm
       canvas.width =pdf.width
       
       let ele = document.querySelector('#downloadpdf')
-			let width = ele.offsetWidth // 셀렉트한 요소의 px 너비
-			let height = ele.offsetHeight // 셀렉트한 요소의 px 높이
+         let width = ele.offsetWidth // 셀렉트한 요소의 px 너비
+         let height = ele.offsetHeight // 셀렉트한 요소의 px 높이
       let imgHeight = pageWidth * height/width // 이미지 높이값 px to mm 변환
-			if(!ele){
-				// console.warn(selector + ' is not exist.')
-				return false
-			}
-			html2canvas(document.querySelector('body')).then(function(canvas) {
+         if(!ele){
+            // console.warn(selector + ' is not exist.')
+            return false
+         }
+         html2canvas(document.querySelector('body')).then(function(canvas) {
         let position = -120
         var imgData = canvas.toDataURL("image/png"); //캔버스를 이미지로 변환
         pdf.addImage(imgData, "PNG",0,position, pageWidth, imgHeight+1, undefined, 'FAST'); //이미지를 기반으로 pdf생성
 
         //Paging 처리
-					let heightLeft = imgHeight //페이징 처리를 위해 남은 페이지 높이 세팅.
+               let heightLeft = imgHeight //페이징 처리를 위해 남은 페이지 높이 세팅.
           heightLeft -= pageHeight
-					while (heightLeft >= 0) {
+               while (heightLeft >= 0) {
             position = -120 + heightLeft - imgHeight
-						pdf.addPage();
-						pdf.addImage(imgData, 'png', 0, position+3, pageWidth, imgHeight)
+                  pdf.addPage();
+                  pdf.addImage(imgData, 'png', 0, position+3, pageWidth, imgHeight)
             heightLeft -= pageHeight
-					}
+               }
+
 
 
         pdf.save("MyBudget.pdf"); //pdf저장
