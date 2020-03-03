@@ -29,11 +29,11 @@ e-투계더는 emart 상품을 기반으로 워크샵, MT, 여행 등 단체로 
 
 #### 3. 시스템 아키텍쳐
 
-![시스템아키텍쳐](\typora-user-images\시스템아키텍쳐.png)
+![시스템아키텍쳐](.\typora-user-images\시스템아키텍쳐.png)
 
 #### 4. ERD
 
-![ERD](\typora-user-images\ERD.PNG)
+![ERD](.\typora-user-images\ERD.PNG)
 
 #### 5. Restful API 
 
