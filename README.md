@@ -22,7 +22,7 @@ e-투계더는 emart 상품을 기반으로 워크샵, MT, 여행 등 단체로 
   - Server : AWS(ubuntu) (Back-end: Apache Tomcat / Front-end: Nginx / SSH: certbot)
   - 협업 툴: GitLab, Jira, slack
 - 기술 특이점
-  - 라이브러리: JWT, HtmlEmail, jsoup, Multipart, html2canvas, jspdf
+  - 라이브러리: JWT, HtmlEmail, jsoup, Multipart, html2canvas, jspdf, vue-infinite-loading
   - API: 카카오톡 링크 api, 카카오맵 api
 
 
