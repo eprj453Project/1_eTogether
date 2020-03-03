@@ -209,6 +209,7 @@ export default {
     kakaotalklink() {
       //<![CDATA[
       // // 사용할 앱의 JavaScript 키를 설정해 주세요.
+      // Kakao.cleanup();
       Kakao.init("918cb2cf36b91b4f11f0a63002dc2154");
       // // 카카오링크 버튼을 생성합니다. 처음 한번만 호출하면 됩니다.
       Kakao.Link.createDefaultButton({
