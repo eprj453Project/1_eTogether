@@ -10,7 +10,7 @@ const MYBUDGETS = 'mybudgets'
 // Setup Firebase
 // Do change to your own firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDsZyLT45vBk_XE32xRyM8MM9dA6HKOCsQ",
+  apiKey: "",
   authDomain: "solar-virtue-258705.firebaseapp.com",
   databaseURL: "https://solar-virtue-258705.firebaseio.com",
   projectId: "solar-virtue-258705",
